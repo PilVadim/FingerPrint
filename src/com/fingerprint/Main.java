@@ -39,7 +39,7 @@ public class Main {
             String command = sc.nextLine();
 
             if (EXIT_COMMANDS.contains(command.toLowerCase()))
-                return;
+                System.exit(0);
 
             if (STYLES_COMMANDS.contains(command.toLowerCase())){
                 changeStyle(command.toLowerCase());
@@ -50,6 +50,8 @@ public class Main {
                 final int size = Integer.parseInt(command);
                 System.out.println( drawPrint(size, L_STYLE) );
             } catch (Exception ex){
+                System.out.println(ex.getMessage());
+                ex.printStackTrace();
                 System.out.println("Not a number or command\n" +
                                     "- put integer to generate fingerprint:\n" +
                                     "- put command to set style:\n");

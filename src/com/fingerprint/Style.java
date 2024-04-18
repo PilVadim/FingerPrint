@@ -1,24 +1,21 @@
 package com.fingerprint;
 
-import java.util.Random;
+import java.util.*;
 
 public class Style {
 
+    private final List<Brick> bricks = new ArrayList<>();
+    private final Map<String, List<Brick>> buffer = new HashMap<>();
+
     private final static Random rnd = new Random();
     //1111 TRBL
-    public final String LR; // RL 0101
-    public final String TB; // TB 1010
-    public final String LB; // BL 0011
-    public final String TR; // TR 1100
-    public final String BR; // BR 0110
-    public final String LT; // TL 1001
-
-    private final String[] ALL = new String[6];
-    private final String[] LEFT = new String[3];
-    private final String[] TOP = new String[3];
-    private final String[] RIGHT = new String[3];
-    private final String[] BOTTOM = new String[3];
-
+    public final Brick LR; // RL 0101
+    public final Brick TB; // TB 1010
+    public final Brick LB; // BL 0011
+    public final Brick TR; // TR 1100
+    public final Brick BR; // BR 0110
+    public final Brick LT; // TL 1001
+    public final Brick EMPTY; // TL 1001
 
     public Style(final String LR,
                  final String TB,
@@ -27,51 +24,76 @@ public class Style {
                  final String BR,
                  final String LT) {
 
-        this.LR = LR;
-        this.TB = TB;
-        this.BR = BR;
-        this.LB = LB;
-        this.TR = TR;
-        this.LT = LT;
-
-        ALL[0] = LR;
-        ALL[1] = TB;
-        ALL[2] = LB;
-        ALL[3] = TR;
-        ALL[4] = BR;
-        ALL[5] = LT;
-
-        LEFT[0] = TB;
-        LEFT[1] = TR;
-        LEFT[2] = BR;
-
-        RIGHT[0] = TB;
-        RIGHT[1] = LB;
-        RIGHT[2] = LT;
-
-        TOP[0] = LR;
-        TOP[1] = LB;
-        TOP[2] = BR;
-
-        BOTTOM[0] = LR;
-        BOTTOM[1] = TR;
-        BOTTOM[2] = LT;
+        this.LR = new Brick((byte) 0b0101, LR);
+        this.TB = new Brick((byte) 0b1010, TB);
+        this.BR = new Brick((byte) 0b0110, BR);
+        this.LB = new Brick((byte) 0b0011, LB);
+        this.TR = new Brick((byte) 0b1100, TR);
+        this.LT = new Brick((byte) 0b1001, LT);
+        this.EMPTY = new Brick((byte) 0b0000, " ");
+        //TRBL - top right bottom left - connections
+        bricks.add(this.LR);
+        bricks.add(this.TB);
+        bricks.add(this.BR);
+        bricks.add(this.LB);
+        bricks.add(this.TR);
+        bricks.add(this.LT);
     }
 
-    public String getFromALL(){
-        return ALL[rnd.nextInt(6)];
+    public Brick getRandomBrickByFilter(final Boolean top,
+                                        final Boolean right,
+                                        final Boolean bottom,
+                                        final Boolean left){
+        byte filter = getFilter(top, right, bottom, left);
+        byte revFilter = getReverseFilter(top, right, bottom, left);
+
+        final List<Brick> bricks = getElementsByFilter(filter, revFilter);
+        if (bricks.isEmpty())
+            return EMPTY;
+        else
+            return bricks.get(rnd.nextInt(bricks.size()));
     }
-    public String getFromLEFT(){
-        return LEFT[rnd.nextInt(3)];
+
+    private List<Brick> getElementsByFilter(final Byte filter,
+                                            final Byte revFilter){
+
+        final String bufferKey = filter + "_" + revFilter;
+        if (buffer.containsKey(bufferKey))
+            return buffer.get(bufferKey);
+
+        final List<Brick> result = new ArrayList<>();
+        for (final Brick b : bricks)
+            if ( (filter == 0 || ((b.getCode() & filter) == filter))
+                    && (revFilter == 0 || ((b.getCode() & revFilter) == 0)))
+                result.add(b);
+
+        buffer.put(bufferKey, result);
+        return result;
+
     }
-    public String getFromTOP(){
-        return TOP[rnd.nextInt(3)];
+
+    private byte getFilter(final Boolean top,
+                           final Boolean right,
+                           final Boolean bottom,
+                           final Boolean left){
+        byte filter = 0b0000;
+        if (top != null && top) filter |= 0b1000;
+        if (right != null && right) filter |= 0b0100;
+        if (bottom != null && bottom) filter |= 0b0010;
+        if (left != null && left) filter |= 0b0001;
+        return filter;
     }
-    public String getFromRIGHT(){
-        return RIGHT[rnd.nextInt(3)];
-    }
-    public String getFromBOTTOM(){
-        return BOTTOM[rnd.nextInt(3)];
+
+    private byte getReverseFilter(final Boolean top,
+                                  final Boolean right,
+                                  final Boolean bottom,
+                                  final Boolean left){
+        byte filter = 0b0000;
+        if (top != null && ! top) filter |= 0b1000;
+        if (right != null && ! right) filter |= 0b0100;
+        if (bottom != null && ! bottom) filter |= 0b0010;
+        if (left != null && ! left) filter |= 0b0001;
+        return filter;
     }
 
 }
