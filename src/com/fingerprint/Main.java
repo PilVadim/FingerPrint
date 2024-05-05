@@ -36,15 +36,22 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         while (true){
-            String command = sc.nextLine();
+            String command = sc.nextLine().toLowerCase();
 
-            if (EXIT_COMMANDS.contains(command.toLowerCase()))
+            if (EXIT_COMMANDS.contains(command))
                 System.exit(0);
 
-            if (STYLES_COMMANDS.contains(command.toLowerCase())){
-                changeStyle(command.toLowerCase());
+            if (STYLES_COMMANDS.contains(command)){
+                changeStyle(command);
                 continue;
             }
+
+//            if (command.startsWith("b")){
+//                command = command.replace("b", "");
+//                final int size = Integer.parseInt(command);
+//                drawBorder(size, L_STYLE);
+//                continue;
+//            }
 
             try{
                 final int size = Integer.parseInt(command);

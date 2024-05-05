@@ -15,7 +15,7 @@ public class Style {
     public final Brick TR; // TR 1100
     public final Brick BR; // BR 0110
     public final Brick LT; // TL 1001
-    public final Brick EMPTY; // TL 1001
+    public final Brick EMPTY; // 0000
 
     public Style(final String LR,
                  final String TB,
