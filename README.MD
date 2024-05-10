@@ -11,7 +11,7 @@ Main rule is - no free ends.<br>
 
 #### -Number-<br>
 
-Prints any positive integer to get picture of the specified size. <br>
+Print any positive integer to get picture of the specified size. <br>
 
 #### d<br>
 
